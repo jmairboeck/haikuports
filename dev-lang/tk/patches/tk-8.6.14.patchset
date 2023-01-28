@@ -1,0 +1,66 @@
+From 1e0dab0f2ca4428e3ccf6ecad20c96c294daa88a Mon Sep 17 00:00:00 2001
+From: Jerome Duval <jerome.duval@gmail.com>
+Date: Sat, 11 Apr 2020 14:33:00 -0400
+Subject: import patch from previous version
+
+
+diff --git a/unix/tcl.m4 b/unix/tcl.m4
+index ca94abd..eae2f72 100644
+--- a/unix/tcl.m4
++++ b/unix/tcl.m4
+@@ -630,7 +630,13 @@ AC_DEFUN([SC_ENABLE_THREADS], [
+ 	    # The space is needed
+ 	    THREADS_LIBS=" -lpthread"
+ 	else
+-	    AC_CHECK_LIB(pthreads, pthread_mutex_init,
++	    AC_CHECK_LIB(root, pthread_mutex_init,
++		tcl_ok=yes, tcl_ok=no)
++		if test "$tcl_ok" = "yes"; then
++		# The space is needed
++		THREAD_LIBS=" "
++		else
++		AC_CHECK_LIB(pthreads, pthread_mutex_init,
+ 		tcl_ok=yes, tcl_ok=no)
+ 	    if test "$tcl_ok" = "yes"; then
+ 		# The space is needed
+@@ -649,6 +655,7 @@ AC_DEFUN([SC_ENABLE_THREADS], [
+ 			AC_MSG_WARN([Don't know how to find pthread lib on your system - you must disable thread support or edit the LIBS in the Makefile...])
+ 		    fi
+ 		fi
++		fi
+ 	    fi
+ 	fi
+ 
+@@ -1241,6 +1248,7 @@ AC_DEFUN([SC_CONFIG_CFLAGS], [
+ 	    SHLIB_LD='${CC} ${CFLAGS} ${LDFLAGS} -shared'
+ 	    DL_OBJS="tclLoadDl.o"
+ 	    DL_LIBS="-lroot"
++	    LD_LIBRARY_PATH_VAR="LIBRARY_PATH"
+ 	    AC_CHECK_LIB(network, inet_ntoa, [LIBS="$LIBS -lnetwork"])
+ 	    ;;
+ 	HP-UX-*.11.*)
+-- 
+2.37.3
+
+
+From f09a0ecb06e51b8bf45074d4a8c92adb87cc3ed3 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Joachim=20Mairb=C3=B6ck?= <j.mairboeck@gmail.com>
+Date: Thu, 5 Jan 2023 23:45:33 +0100
+Subject: fix 64bit detection
+
+
+diff --git a/unix/tcl.m4 b/unix/tcl.m4
+index eae2f72..a0915b4 100644
+--- a/unix/tcl.m4
++++ b/unix/tcl.m4
+@@ -1250,6 +1250,7 @@ AC_DEFUN([SC_CONFIG_CFLAGS], [
+ 	    DL_LIBS="-lroot"
+ 	    LD_LIBRARY_PATH_VAR="LIBRARY_PATH"
+ 	    AC_CHECK_LIB(network, inet_ntoa, [LIBS="$LIBS -lnetwork"])
++	    do64bit_ok=yes
+ 	    ;;
+ 	HP-UX-*.11.*)
+ 	    # Use updated header definitions where possible
+-- 
+2.37.3
+

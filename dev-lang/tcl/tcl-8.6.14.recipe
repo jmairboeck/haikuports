@@ -78,6 +78,11 @@ BUILD()
 	export CFLAGS="-USQLITE_API -USQLITE_EXTERN"
 	cd unix
 	autoconf -f
+	for pkg in ../pkgs/*/; do
+		pushd $pkg
+		autoconf -f
+		popd
+	done
 	runConfigure --omit-dirs binDir ./configure \
 		--bindir=$commandBinDir \
 		--enable-man-symlinks \
