@@ -9,11 +9,11 @@ others.
 This package does not contain ndimage module."
 HOMEPAGE="https://www.scipy.org/"
 COPYRIGHT=" 2001-2002 Enthought, Inc.
-	2003-2021 SciPy Developers"
+	2003-2022 SciPy Developers"
 LICENSE="BSD (3-clause)"
-REVISION="3"
-SOURCE_URI="https://github.com/scipy/scipy/releases/download/v$portVersion/scipy-$portVersion.tar.xz"
-CHECKSUM_SHA256="3851fdcb1e6877241c3377aa971c85af0d44f90c57f4dd4e54e1b2bbd742635e"
+REVISION="1"
+SOURCE_URI="https://github.com/scipy/scipy/releases/download/v$portVersion/scipy-$portVersion.tar.gz"
+CHECKSUM_SHA256="2cf9dfb80a7b4589ba4c40ce7588986d6d5cebc5457cad2c2880f6bc2d42f3a5"
 SOURCE_DIR="scipy-$portVersion"
 PATCHES="scipy-$portVersion.patchset"
 
@@ -44,6 +44,13 @@ BUILD_REQUIRES="
 	devel:libopenblas$secondaryArchSuffix
 	devel:libumfpack$secondaryArchSuffix
 	"
+BUILD_PREREQUIRES="$BUILD_PREREQUIRES
+	cmd:g++$secondaryArchSuffix
+	cmd:gfortran$secondaryArchSuffix
+	cmd:make
+	cmd:pkg_config$secondaryArchSuffix
+	cmd:swig # not sure if actually used
+	"
 
 PYTHON_PACKAGES=(python38 python39 python310)
 PYTHON_VERSIONS=(3.8 3.9 3.10)
@@ -59,18 +66,19 @@ REQUIRES_$pythonPackage=\"\
 	cmd:f2py$pythonVersion\n\
 	cmd:python$pythonVersion\
 	\""
+if [ $targetArchitecture = x86_gcc2 ]; then
+	eval "PROVIDES_${pythonPackage}+=\"\
+		scipy_$pythonPackage = $portVersion\n\
+		\""
+fi
 BUILD_REQUIRES="$BUILD_REQUIRES
+	pip_$pythonPackage
 	pybind11${secondaryArchSuffix}_$pythonPackage
 	numpy${secondaryArchSuffix}_$pythonPackage
 	setuptools_$pythonPackage
 	"
 BUILD_PREREQUIRES="$BUILD_PREREQUIRES
-	cmd:g++$secondaryArchSuffix
-	cmd:gfortran$secondaryArchSuffix
-	cmd:make
-	cmd:pkg_config$secondaryArchSuffix
 	cmd:python$pythonVersion
-	cmd:swig # not sure if actually used
 	"
 done
 
