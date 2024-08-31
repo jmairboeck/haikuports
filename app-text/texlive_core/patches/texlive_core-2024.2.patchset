@@ -1,4 +1,4 @@
-From 8a78b705e7ce64fac04334f7d1aaaf14760d970d Mon Sep 17 00:00:00 2001
+From 16e85fa3ae0014a72dde79c60e957c704b87cd8d Mon Sep 17 00:00:00 2001
 From: Jessica Hamilton <jessica.l.hamilton@gmail.com>
 Date: Sun, 18 Apr 2021 12:16:13 +0200
 Subject: Haiku support
@@ -37,7 +37,7 @@ index a92d247..3d9bd99 100644
  #endif
  
 diff --git a/texk/dvipdfm-x/configure.ac b/texk/dvipdfm-x/configure.ac
-index 40afd7c..054611e 100644
+index faf5568..8838ff8 100644
 --- a/texk/dvipdfm-x/configure.ac
 +++ b/texk/dvipdfm-x/configure.ac
 @@ -50,6 +50,7 @@ AC_CHECK_SIZEOF([int])
@@ -49,10 +49,10 @@ index 40afd7c..054611e 100644
  KPSE_KPATHSEA_FLAGS
  KPSE_ZLIB_FLAGS
 diff --git a/texk/dvipdfm-x/dvipdfmx.c b/texk/dvipdfm-x/dvipdfmx.c
-index ec4499c..afe3f31 100644
+index 95f9335..86e8117 100644
 --- a/texk/dvipdfm-x/dvipdfmx.c
 +++ b/texk/dvipdfm-x/dvipdfmx.c
-@@ -365,6 +365,9 @@ getpass (const char *prompt)
+@@ -368,6 +368,9 @@ getpass (const char *prompt)
    return pwd_buf;
  }
  #else  /* !WIN32 */
@@ -63,7 +63,7 @@ index ec4499c..afe3f31 100644
  #endif /* WIN32 */
  
 diff --git a/texk/web2c/configure.ac b/texk/web2c/configure.ac
-index e90ca38..ca7f8f5 100644
+index 014da32..976d89a 100644
 --- a/texk/web2c/configure.ac
 +++ b/texk/web2c/configure.ac
 @@ -107,9 +107,9 @@ KPSE_LUA52_DEFINES
@@ -80,17 +80,17 @@ index e90ca38..ca7f8f5 100644
    AC_SEARCH_LIBS([nanosleep], [rt])
    LIBS=$kpse_save_LIBS
 -- 
-2.30.2
+2.45.2
 
 
-From 4d9bca6d325d71456f1903cc80b3877abe41fcd8 Mon Sep 17 00:00:00 2001
+From 7f9293afb3be938a4f2c49cedc3649d979feca0b Mon Sep 17 00:00:00 2001
 From: Jessica Hamilton <jessica.l.hamilton@gmail.com>
 Date: Tue, 2 Jun 2015 09:30:45 +1200
 Subject: Don't use the /nonesuch idiom on Haiku.
 
 
 diff --git a/texk/kpathsea/cnf-to-paths.awk b/texk/kpathsea/cnf-to-paths.awk
-index 894f352..a98c5cb 100644
+index d06f871..9129119 100644
 --- a/texk/kpathsea/cnf-to-paths.awk
 +++ b/texk/kpathsea/cnf-to-paths.awk
 @@ -46,12 +46,9 @@
@@ -109,10 +109,10 @@ index 894f352..a98c5cb 100644
    
    print "#ifndef DEFAULT_" ident;
 -- 
-2.30.2
+2.45.2
 
 
-From 77986a30c780f2073650d98c95025963220fda96 Mon Sep 17 00:00:00 2001
+From 104a6b17862537ed4fce0a8b2b0ec6ed56791e5d Mon Sep 17 00:00:00 2001
 From: Jessica Hamilton <jessica.l.hamilton@gmail.com>
 Date: Tue, 2 Jun 2015 10:16:26 +1200
 Subject: Don't allow SELFAUTO* magic on Haiku.
@@ -147,10 +147,10 @@ index a984eab..4792dea 100644
  #if defined(WIN32) || defined(__CYGWIN__)
    mk_suffixlist(kpse);
 -- 
-2.30.2
+2.45.2
 
 
-From 9c6e3297f09142844ed305e4e79265aea77f9b00 Mon Sep 17 00:00:00 2001
+From b4f2d60659c48bf9f59e68acfb1a75ac66657840 Mon Sep 17 00:00:00 2001
 From: Jessica Hamilton <jessica.l.hamilton@gmail.com>
 Date: Sat, 12 Jun 2021 14:05:19 +0200
 Subject: Try and fix up more weirdness with install-tl
@@ -220,5 +220,64 @@ index 1f0e3c1..e9ec416 100755
     esac
  }
 -- 
-2.30.2
+2.45.2
+
+
+From ce5a61848469045c824dcfc263b2c0516a81bc0d Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Joachim=20Mairb=C3=B6ck?= <j.mairboeck@gmail.com>
+Date: Thu, 29 Aug 2024 21:37:56 +0200
+Subject: allow to use system pplib
+
+
+diff --git a/libs/pplib/ac/pplib.ac b/libs/pplib/ac/pplib.ac
+new file mode 100644
+index 0000000..b7f1ed5
+--- /dev/null
++++ b/libs/pplib/ac/pplib.ac
+@@ -0,0 +1,9 @@
++## libs/zlib/ac/pplib.ac: configure.ac fragment for the TeX Live subdirectory libs/pplib/
++dnl
++dnl Copyright (C) 2024 Joachim Mairböck <j.mairboeck@gmail.com>
++dnl You may freely use, modify and/or distribute this file.
++dnl
++## basic check of system pplib
++KPSE_TRY_LIB([pplib],
++             [#include <pplib.h>],
++             [const char *version = pplib_version;])
+diff --git a/libs/pplib/ac/withenable.ac b/libs/pplib/ac/withenable.ac
+index 2859130..0eed394 100644
+--- a/libs/pplib/ac/withenable.ac
++++ b/libs/pplib/ac/withenable.ac
+@@ -4,4 +4,4 @@ dnl Copyright (C) 2013 Peter Breitenlohner <tex-live@tug.org>
+ dnl You may freely use, modify and/or distribute this file.
+ dnl
+ ## configure options and TL libraries required for pplib
+-KPSE_WITH_LIB([pplib], , [tree])
++KPSE_WITH_LIB([pplib], [zlib], [])
+diff --git a/m4/kpse-pplib-flags.m4 b/m4/kpse-pplib-flags.m4
+index e667454..5dff2d8 100644
+--- a/m4/kpse-pplib-flags.m4
++++ b/m4/kpse-pplib-flags.m4
+@@ -15,16 +15,16 @@
+ # LIBS required for the `-lpplib' library in libs/pplib/ of the TL tree.
+ AC_DEFUN([KPSE_PPLIB_FLAGS], [dnl
+ AC_REQUIRE([KPSE_SAVE_FLAGS])[]dnl
+-_KPSE_LIB_FLAGS([pplib], [pplib], [tree],
++_KPSE_LIB_FLAGS([pplib], [pplib], [],
+                 [-IBLD/libs/pplib/include], [BLD/libs/pplib/libpplib.a], [],
+                 [], [${top_builddir}/../../libs/pplib/include/pplib.h])[]dnl
+ ]) # KPSE_PPLIB_FLAGS
+ 
+ # KPSE_PPLIB_OPTIONS([WITH-SYSTEM])
+ # ----------------------------------
+-AC_DEFUN([KPSE_PPLIB_OPTIONS], [_KPSE_LIB_OPTIONS([PPLIB], [$1], [pkg-config])])
++AC_DEFUN([KPSE_PPLIB_OPTIONS], [_KPSE_LIB_OPTIONS([pplib], [$1], [pkg-config])])
+ 
+ # KPSE_PPLIB_SYSTEM_FLAGS
+ # ------------------------
+ AC_DEFUN([KPSE_PPLIB_SYSTEM_FLAGS], [dnl
+-_KPSE_PKG_CONFIG_FLAGS([PPLIB], [PPLIB])])
++_KPSE_PKG_CONFIG_FLAGS([pplib], [pplib])])
+-- 
+2.45.2
 

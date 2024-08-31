@@ -6,7 +6,7 @@ are free software, including support for many languages around the world."
 HOMEPAGE="http://tug.org/texlive/"
 COPYRIGHT="1996 by collaboration between the TeX user groups."
 LICENSE="GNU GPL v2"
-REVISION="1"
+REVISION="2"
 
 #fullVersion is for full releases from a tarball once a year
 #fullVersion=20240312
@@ -459,6 +459,7 @@ REQUIRES="
 	lib:libpixman_1$secondaryArchSuffix
 	lib:libpng16$secondaryArchSuffix
 	lib:libpotrace$secondaryArchSuffix
+	lib:libpplib$secondaryArchSuffix
 	lib:libz$secondaryArchSuffix
 	lib:libzzip_0$secondaryArchSuffix
 	"
@@ -498,6 +499,7 @@ BUILD_REQUIRES="
 	devel:libpixman_1$secondaryArchSuffix
 	devel:libpng16$secondaryArchSuffix
 	devel:libpotrace$secondaryArchSuffix
+	devel:libpplib$secondaryArchSuffix
 	devel:libz$secondaryArchSuffix
 	devel:libzzip$secondaryArchSuffix
 	"
@@ -791,6 +793,7 @@ BUILD()
 		--with-system-libgs \
 		--with-system-harfbuzz \
 		--with-system-teckit \
+		--with-system-pplib \
 		--without-x \
 		--disable-chktex \
 		--disable-cjkutils \
