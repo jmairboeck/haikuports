@@ -1,0 +1,80 @@
+SUMMARY="PDF disassembling library for LuaTeX"
+DESCRIPTION="This is pplib - PDF disassembling library for LuaTeX (http://luatex.org)
+
+The library has no LuaTeX dependency, it depends only on zlib. However, pplib was tailor-made for \
+LuaTeX and its functionals are somewhat limited (eg. read-only PDF support)."
+HOMEPAGE="https://github.com/contextgarden/pplib"
+COPYRIGHT="Paweł Jackowski"
+LICENSE="GNU GPL v2"
+REVISION="1"
+srcGitRev="47faa509c47216a93ffb9cfb62562e88470d4451"
+SOURCE_URI="https://github.com/contextgarden/pplib/archive/$srcGitRev.tar.gz"
+CHECKSUM_SHA256="d6b199de7d91d68b4bf9604207cc71bcdaf159ff791f01b3b6933e3393c59217"
+SOURCE_DIR="pplib-$srcGitRev"
+PATCHES="pplib-$portVersion.patchset"
+
+ARCHITECTURES="all"
+SECONDARY_ARCHITECTURES="x86"
+
+PROVIDES="
+	pplib$secondaryArchSuffix = $portVersion
+	lib:libpplib$secondaryArchSuffix
+	"
+REQUIRES="
+	haiku$secondaryArchSuffix
+	lib:libz$secondaryArchSuffix
+	"
+
+PROVIDES_devel="
+	pplib${secondaryArchSuffix}_devel = $portVersion
+	devel:libpplib$secondaryArchSuffix
+	"
+REQUIRES_devel="
+	pplib$secondaryArchSuffix == $portVersion base
+	devel:libz$secondaryArchSuffix
+	"
+
+BUILD_REQUIRES="
+	haiku${secondaryArchSuffix}_devel
+	devel:libz$secondaryArchSuffix
+	"
+BUILD_PREREQUIRES="
+	cmd:cmake
+	cmd:gcc$secondaryArchSuffix
+	cmd:make
+	"
+
+BUILD()
+{
+	cd src
+	cmake -Bbuild -S. $cmakeDirArgs \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_INCLUDEDIR=$relativeIncludeDir/pplib \
+		-DBUILD_SHARED_LIBS=ON
+	make -C build $jobArgs
+}
+
+INSTALL()
+{
+	make -C src/build install
+
+	prepareInstalledDevelLib libpplib
+
+	# write pkgconfig file
+	mkdir -p $developLibDir/pkgconfig
+	cat <<- EOF > $developLibDir/pkgconfig/pplib.pc
+		Name: pplib
+		Description: $SUMMARY
+		Version: $portVersion
+		Libs: -lpplib
+		Cflags: -I$includeDir/pplib
+	EOF
+
+	packageEntries devel \
+		$developDir
+}
+
+TEST()
+{
+	ctest --test-dir src/build
+}

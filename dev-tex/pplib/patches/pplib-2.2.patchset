@@ -1,0 +1,109 @@
+From 80748d6349f13bc4fb44c0aeb87cc2e4748c1778 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Joachim=20Mairb=C3=B6ck?= <j.mairboeck@gmail.com>
+Date: Thu, 29 Aug 2024 13:55:16 +0200
+Subject: allow build from src using external zlib
+
+This uses `find_package(ZLIB)` when building from source to optionally avoid
+the submodule and use an installed zlib instead.
+
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 36cc421..e7ca7cf 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 3.5)
++cmake_minimum_required(VERSION 3.21)
+ 
+ project(pplib
+     LANGUAGES C)
+@@ -6,6 +6,13 @@ set(VERSION 1.0.5)
+ 
+ set(CMAKE_C_STANDARD 99)
+ 
++if(PROJECT_IS_TOP_LEVEL)
++    find_package(ZLIB REQUIRED)
++    set(zlib_target ZLIB::ZLIB)
++else()
++    set(zlib_target zlib)
++endif()
++
+ add_library(pplib_utils STATIC
+     util/utilplat.h
+     util/utilcryptdef.h
+@@ -42,7 +49,7 @@ target_include_directories(pplib_utils PUBLIC
+ target_link_libraries(pplib_utils
+     PUBLIC
+         m
+-        zlib
++        ${zlib_target}
+ )
+ 
+ add_library(pplib_filters STATIC
+@@ -63,7 +70,7 @@ target_include_directories(pplib_filters PUBLIC
+ target_link_libraries(pplib_filters
+     PUBLIC
+         m
+-        zlib
++        ${zlib_target}
+ )
+ 
+ add_library(pplib
+-- 
+2.45.2
+
+
+From d4c7e018e874f9107470d705935679763d28aff5 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Joachim=20Mairb=C3=B6ck?= <j.mairboeck@gmail.com>
+Date: Thu, 29 Aug 2024 13:58:26 +0200
+Subject: fix installation paths
+
+When specifying `DESTINATION lib`, all files get installed there, also the
+headers, therefore don't specify it so that files get installed in their
+default location instead.
+
+Also include GNUInstallDirs to make the installation paths configurable using
+standard CMake variables CMAKE_INSTALL_INCLUDEDIR and CMAKE_INSTALL_LIBDIR.
+
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index e7ca7cf..32a1c1a 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -138,9 +138,10 @@ set_target_properties(pplib
+ 
+ add_library(pplib::pplib ALIAS pplib)
+ 
++include(GNUInstallDirs)
++
+ install(TARGETS pplib
+     EXPORT pplib
+-    DESTINATION lib
+ )
+ 
+ enable_testing()
+-- 
+2.45.2
+
+
+From 36be7145905fdb3685b515b6d7b255cff312ee78 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Joachim=20Mairb=C3=B6ck?= <j.mairboeck@gmail.com>
+Date: Thu, 29 Aug 2024 16:10:37 +0200
+Subject: install all headers
+
+pplib.h includes the other headers, so they must also be installed.
+
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 32a1c1a..d8fce3a 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -133,7 +133,7 @@ endif (MSVC)
+ 
+ set_target_properties(pplib
+     PROPERTIES
+-        PUBLIC_HEADER "ppapi.h;ppconf.h;pplib.h"
++        PUBLIC_HEADER "ppapi.h;ppconf.h;pplib.h;pparray.h;ppcrypt.h;ppdict.h;ppfilter.h;ppheap.h;ppload.h;ppstream.h;ppxref.h;util/utilplat.h;util/utilcryptdef.h;util/utildecl.h;util/utilcrypt.h;util/utiliof.h;util/utillog.h;util/utilmd5.h;util/utilmem.h;util/utilmemheap.h;util/utilmemheapiof.h;util/utilmeminfo.h;util/utilnumber.h;util/utilsha.h;util/utilbasexx.h;util/utilflate.h;util/utilfpred.h;util/utillzw.h;util/utilmemallc.h;util/utilmemallh.h"
+ )
+ 
+ add_library(pplib::pplib ALIAS pplib)
+-- 
+2.45.2
+
